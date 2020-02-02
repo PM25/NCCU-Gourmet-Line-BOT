@@ -12,7 +12,7 @@ gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
 
 #%% Get Restaurant near National Chengchi University (NCCU)
 location = (24.9873604, 121.574662)
-radius = 250
+radius = 150
 place_type = "restaurant"
 language = "zh-TW"
 
@@ -33,7 +33,7 @@ while True:
         results.append(result)
 
     if "next_page_token" in places_results:
-        sleep(1.5)
+        sleep(2)
         page_token = places_results["next_page_token"]
         places_results = gmaps.places_nearby(page_token=page_token)
     else:
@@ -42,5 +42,8 @@ while True:
 # %% Save Results
 import pickle
 
-with open("results.pickle", "wb") as ofile:
-    pickle.dump(places_results, ofile)
+with open("server/restaurants.pickle", "wb") as ofile:
+    pickle.dump(results, ofile)
+
+
+# %%
