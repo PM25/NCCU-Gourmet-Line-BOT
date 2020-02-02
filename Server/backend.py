@@ -37,8 +37,9 @@ def handle_message(in_msg):
         else:
             pass
     elif in_msg[0] == "抽":
+        img_path = get_img()
         out_msgs = ImageSendMessage(
-            original_content_url=get_img(), preview_image_url=get_img()
+            original_content_url=img_path, preview_image_url=img_path
         )
     return out_msgs
 
