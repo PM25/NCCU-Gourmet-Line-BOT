@@ -5,7 +5,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
 
-import backend
+from backend import Bot
 
 # Load TOKEN & KEY from .env
 load_dotenv(find_dotenv())
@@ -15,6 +15,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # Setup Line API
 line_bot_api = LineBotApi(ACCESS_TOKEN)
 handler = WebhookHandler(SECRET_KEY)
+
+# Init Backend Line bot
+bot = Bot()
 
 # Flask APP
 app = Flask(__name__)
@@ -39,7 +42,7 @@ def callback():
 def handle_message(event):
     if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
         msg = event.message.text
-        msg = backend.handle_message(msg)
+        msg = bot.handle_message(msg)
         line_bot_api.reply_message(event.reply_token, msg)
 
 
