@@ -55,7 +55,7 @@ class Bot:
         else:
             for restaurant in self.restaurants:
                 text += f"{restaurant['idx']}: {restaurant['name']}\n"
-        txt_message = TextSendMessage(text=text)
+        txt_message = TextSendMessage(text=text[:-1])
         return txt_message
 
     def help_menu(self):
