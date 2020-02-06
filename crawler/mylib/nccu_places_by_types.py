@@ -4,9 +4,8 @@ from time import sleep
 
 
 class NCCU_Places_By_Types(NCCU_Places):
-    def __init__(self, locations, place_types):
+    def __init__(self, locations):
         super().__init__(locations)
-        self.place_types = place_types
 
     def get_places(self, location, place_type):
         print(f"*Searching {place_type} near location {location}.")
@@ -38,8 +37,8 @@ class NCCU_Places_By_Types(NCCU_Places):
                     results.append(place_result)
         return results
 
-    def get_all_places(self):
+    def get_all_places(self, place_types):
         results = {}
-        for place_type in self.place_types:
+        for place_type in place_types:
             results[place_type] = self.get_all_places_by_type(place_type)
         return results

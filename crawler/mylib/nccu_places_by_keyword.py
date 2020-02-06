@@ -4,9 +4,8 @@ from time import sleep
 
 
 class NCCU_Places_By_Keyword(NCCU_Places):
-    def __init__(self, locations, keywords):
+    def __init__(self, locations):
         super().__init__(locations)
-        self.keywords = keywords
 
     def get_places(self, location, keyword):
         print(f"*Searching {keyword} near location {location}.")
@@ -38,8 +37,8 @@ class NCCU_Places_By_Keyword(NCCU_Places):
                     results.append(place_result)
         return results
 
-    def get_all_places(self):
+    def get_all_places(self, keywords):
         results = {}
-        for keyword in self.keywords:
+        for keyword in keywords:
             results[keyword] = self.get_all_places_by_keyword(keyword)
         return results
