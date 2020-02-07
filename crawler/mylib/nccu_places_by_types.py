@@ -27,18 +27,3 @@ class NCCU_Places_By_Types(NCCU_Places):
             results += places_results["results"]
 
         return results
-
-    def get_all_places_by_type(self, place_type):
-        results = []
-        for location in self.locations:
-            for place_result in self.get_places(location, place_type):
-                result_loc = place_result["geometry"]["location"]
-                if self.check_loc(result_loc["lat"], result_loc["lng"]):
-                    results.append(place_result)
-        return results
-
-    def get_all_places(self, place_types):
-        results = {}
-        for place_type in place_types:
-            results[place_type] = self.get_all_places_by_type(place_type)
-        return results

@@ -1,7 +1,6 @@
 #%%
 from mylib import *
 
-# %%
 locations = [
     (24.989267, 121.573721),
     (24.987847, 121.574858),
@@ -19,13 +18,11 @@ place_types = [
     "restaurant",
     "supermarket",
 ]
+keywords = ["drink", "飲料", "restaurant", "餐廳"]
 
-# %%
-keywords = ["drink", "飲料"]
+
 nccu = NCCU_Places_By_Keyword(locations)
 places = nccu.get_all_places(keywords)
 
-# %%
-all_places = []
-for place_type in keywords:
-    all_places += places[place_type]
+nccu = NCCU_Places_By_Types(locations)
+places = nccu.get_all_places(place_types)

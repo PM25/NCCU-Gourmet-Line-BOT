@@ -27,18 +27,3 @@ class NCCU_Places_By_Keyword(NCCU_Places):
             results += places_results["results"]
 
         return results
-
-    def get_all_places_by_keyword(self, keyword):
-        results = []
-        for location in self.locations:
-            for place_result in self.get_places(location, keyword):
-                result_loc = place_result["geometry"]["location"]
-                if self.check_loc(result_loc["lat"], result_loc["lng"]):
-                    results.append(place_result)
-        return results
-
-    def get_all_places(self, keywords):
-        results = {}
-        for keyword in keywords:
-            results[keyword] = self.get_all_places_by_keyword(keyword)
-        return results
