@@ -8,10 +8,11 @@ from linebot.models import *
 
 class Bot:
     def __init__(self):
-        self.restaurants = self.load_restaurants()
+        self.restaurants = self.load_file()
+        self.noodle_restaurants = self.load_file("noodle.pickle")
         self.jpg_urls = self.load_jpgs()
 
-    def load_restaurants(self, fname="restaurants.pickle"):
+    def load_file(self, fname="restaurants.pickle"):
         with open(fname, "rb") as file:
             restaurants = load(file)
         for i in range(len(restaurants)):
@@ -31,8 +32,8 @@ class Bot:
         )
         return img_message
 
-    def get_restaurant(self):
-        restaurant = choice(self.restaurants)
+    def get_restaurant(self, fname="restaurants.pickle"):
+        restaurant = choice(self.load_file(fname))
         if "formatted_address" in restaurant:
             address = restaurant["formatted_address"]
         else:
@@ -80,7 +81,7 @@ class Bot:
                 if in_msg[1] == "飯":
                     pass
                 elif in_msg[1] == "麵":
-                    pass
+                    out_msg = self.get_restaurant("noodle.pickle")
                 elif in_msg[1] == "素":
                     pass
                 elif in_msg[1:3] == "點心":
@@ -107,7 +108,7 @@ class Bot:
 # %%
 if __name__ == "__main__":
     bot = Bot()
-    out = bot.handle_message("help")
+    out = bot.handle_message("吃麵")
     print(out)
 
 # %%
