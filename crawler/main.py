@@ -50,3 +50,26 @@ with open("../drinks.pickle", "wb") as infile:
     pickle.dump(drink_places, infile)
 
 # %%
+keyword_id_tab = {}
+for place in food_places + drink_places:
+    for keyword in place["keywords"]:
+        keyword_id_tab[keyword] = keyword_id_tab.get(keyword, []) + [place["id"]]
+
+with open("../keyword_id.pickle", "wb") as infile:
+    pickle.dump(keyword_id_tab, infile)
+
+# %%
+all_places = food_places + drink_places
+all_places = nccu.add_index(all_places)
+
+with open("../all.pickle", "wb") as infile:
+    pickle.dump(all_places, infile)
+
+# %%
+id_index_tab = {}
+for place in all_places:
+    id_index_tab[place["id"]] = place["index"]
+
+with open("../id_index.pickle", "wb") as infile:
+    pickle.dump(id_index_tab, infile)
+

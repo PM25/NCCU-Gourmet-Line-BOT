@@ -10,13 +10,29 @@ class Bot:
     def __init__(self):
         self.foods = self.load_file("foods.pickle")
         self.drinks = self.load_file("drinks.pickle")
+        self.keyword_id = self.load_file("keyword_id.pickle")
+        self.id_index = self.load_file("id_index.pickle")
+        self.all = self.load_file("all.pickle")
         self.jpg_urls = self.load_jpgs()
+        self.rice_keywords = ["飯", "rice", "炒飯", "自助餐", "燉飯", "risotto", "飯館", "合菜"]
+        self.noodle_keywords = ["麵", "noodle", "炒麵", "湯麵"]
+        self.rice_restaurants = self.get_restaurants_by_keywords(self.rice_keywords)
+        self.noodle_restaurants = self.get_restaurants_by_keywords(self.noodle_keywords)
+
+    def get_restaurants_by_keywords(self, keywords):
+        restaurants = []
+        place_ids = []
+        for keyword in keywords:
+            place_ids += self.keyword_id[keyword]
+        for place_id in set(place_ids):
+            index = self.id_index[place_id]
+            restaurant = self.all[index]
+            restaurants.append(restaurant)
+        return restaurants
 
     def load_file(self, fname="foods.pickle"):
         with open(fname, "rb") as file:
             restaurants = load(file)
-        for i in range(len(restaurants)):
-            restaurants[i]["idx"] = i
         return restaurants
 
     def load_jpgs(self, path="nccueater"):
@@ -37,6 +53,10 @@ class Bot:
             restaurants = self.foods
         elif place_type == "drinks":
             restaurants = self.drinks
+        elif place_type == "rice":
+            restaurants = self.rice_restaurants
+        elif place_type == "noodle":
+            restaurants = self.noodle_restaurants
 
         restaurant = choice(restaurants)
         if "formatted_address" in restaurant:
@@ -77,7 +97,8 @@ class Bot:
             "吃 → 隨機選擇一間餐廳\n",
             "喝 → 隨機選擇一種飲料\n",
             "抽 → 從吃貨政大IG隨機抽一張圖片\n",
-            "餐廳 → 列出所有餐廳",
+            "餐廳 → 列出所有餐廳\n",
+            "關於 → 顯示小助手的相關資訊",
         ]
         txt_message = TextSendMessage(text="".join(text))
         return txt_message
@@ -96,9 +117,9 @@ class Bot:
                 out_msg = self.get_restaurant("foods")
             else:
                 if in_msg[1] == "飯":
-                    pass
+                    out_msg = self.get_restaurant("rice")
                 elif in_msg[1] == "麵":
-                    pass
+                    out_msg = self.get_restaurant("noodle")
                 elif in_msg[1] == "素":
                     pass
                 elif in_msg[1:3] == "點心":
@@ -135,7 +156,7 @@ class Bot:
 # %%
 if __name__ == "__main__":
     bot = Bot()
-    out = bot.handle_message("飲料店")
+    out = bot.handle_message("吃飯")
     print(out)
 
 # %%
