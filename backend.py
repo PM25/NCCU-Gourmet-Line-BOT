@@ -82,13 +82,18 @@ class Bot:
         txt_message = TextSendMessage(text="".join(text))
         return txt_message
 
+    def about_msg(self):
+        text = ["開發者: PM\n", "版本: v1.0\n", "更新時間: 2019/2/9"]
+        txt_message = TextSendMessage(text="".join(text))
+        return txt_message
+
     def handle_message(self, in_msg):
         out_msg = TextSendMessage(text="")
         if in_msg == "help":
             out_msg = self.help_menu()
         if in_msg[0] == "吃":
             if len(in_msg) == 1:
-                out_msg = self.get_restaurant()
+                out_msg = self.get_restaurant("foods")
             else:
                 if in_msg[1] == "飯":
                     pass
@@ -102,7 +107,7 @@ class Bot:
                     pass
         elif in_msg[0] == "喝":
             if (len(in_msg)) == 1:
-                out_msg = self.get_restaurant("drinks.pickle")
+                out_msg = self.get_restaurant("drinks")
             else:
                 if in_msg[1] == "茶":
                     pass
@@ -122,6 +127,8 @@ class Bot:
                 out_msg = self.list_restaurants("drinks", eval(in_msg[2]))
             else:
                 out_msg = self.list_restaurants("drinks")
+        elif in_msg == "關於":
+            out_msg = self.about_msg()
         return out_msg
 
 

@@ -3,4 +3,4 @@
 ## 📱 加小助手好友
 
 - Line ID: @666pqgjd
-- QR Code: <br><img src="qrcode.png" width="200" height="200">
+- QR Code: <br><img src="imgs/qrcode.png" width="200" height="200">
