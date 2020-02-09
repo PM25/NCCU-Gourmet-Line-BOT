@@ -9,10 +9,9 @@ from linebot.models import *
 class Bot:
     def __init__(self):
         self.restaurants = self.load_file()
-        self.noodle_restaurants = self.load_file("noodle.pickle")
         self.jpg_urls = self.load_jpgs()
 
-    def load_file(self, fname="restaurants.pickle"):
+    def load_file(self, fname="foods.pickle"):
         with open(fname, "rb") as file:
             restaurants = load(file)
         for i in range(len(restaurants)):
@@ -32,19 +31,21 @@ class Bot:
         )
         return img_message
 
-    def get_restaurant(self, fname="restaurants.pickle"):
+    def get_restaurant(self, fname="foods.pickle"):
         restaurant = choice(self.load_file(fname))
         if "formatted_address" in restaurant:
             address = restaurant["formatted_address"]
         else:
             address = restaurant["vicinity"]
+        restaurant_id = restaurant["index"]
         loc_message = LocationSendMessage(
-            title=restaurant["name"],
+            title=f"{restaurant['index']}: {restaurant['name']}",
             address=address,
             latitude=restaurant["geometry"]["location"]["lat"],
             longitude=restaurant["geometry"]["location"]["lng"],
         )
-        return loc_message
+        txt_message = TextSendMessage(f'Google評價: {restaurant["rating"]}')
+        return [loc_message, txt_message]
 
     def list_restaurants(self, idx=-1):
         text = ""
@@ -81,7 +82,7 @@ class Bot:
                 if in_msg[1] == "飯":
                     pass
                 elif in_msg[1] == "麵":
-                    out_msg = self.get_restaurant("noodle.pickle")
+                    pass
                 elif in_msg[1] == "素":
                     pass
                 elif in_msg[1:3] == "點心":
@@ -89,12 +90,15 @@ class Bot:
                 elif in_msg[1] == "貨":
                     pass
         elif in_msg[0] == "喝":
-            if in_msg[1] == "茶":
-                pass
-            elif in_msg[1:3] == "咖啡":
-                pass
+            if (len(in_msg)) == 1:
+                out_msg = self.get_restaurant("drinks.pickle")
             else:
-                pass
+                if in_msg[1] == "茶":
+                    pass
+                elif in_msg[1:3] == "咖啡":
+                    pass
+                else:
+                    pass
         elif in_msg[0] == "抽":
             out_msg = self.get_img()
         elif in_msg[0:2] == "餐廳":
@@ -108,7 +112,7 @@ class Bot:
 # %%
 if __name__ == "__main__":
     bot = Bot()
-    out = bot.handle_message("吃麵")
+    out = bot.handle_message("吃")
     print(out)
 
 # %%

@@ -1,8 +1,7 @@
 #%%
-from mylib.nccu_places_by_types import NCCU_Places_By_Types
-from mylib.nccu_places_by_keyword import NCCU_Places_By_Keyword
+from mylib.nccu_places import NCCU_Places
 
-__all__ = ["NCCU_Places_By_Keyword", "NCCU_Places_By_Types"]
+__all__ = ["NCCU_Places"]
 
 
 # %%
