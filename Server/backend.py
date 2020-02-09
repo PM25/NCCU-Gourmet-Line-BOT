@@ -8,7 +8,8 @@ from linebot.models import *
 
 class Bot:
     def __init__(self):
-        self.restaurants = self.load_file()
+        self.foods = self.load_file("foods.pickle")
+        self.drinks = self.load_file("drinks.pickle")
         self.jpg_urls = self.load_jpgs()
 
     def load_file(self, fname="foods.pickle"):
@@ -31,8 +32,13 @@ class Bot:
         )
         return img_message
 
-    def get_restaurant(self, fname="foods.pickle"):
-        restaurant = choice(self.load_file(fname))
+    def get_restaurant(self, place_type="foods"):
+        if place_type == "foods":
+            restaurants = self.foods
+        elif place_type == "drinks":
+            restaurants = self.drinks
+
+        restaurant = choice(restaurants)
         if "formatted_address" in restaurant:
             address = restaurant["formatted_address"]
         else:
@@ -47,15 +53,20 @@ class Bot:
         txt_message = TextSendMessage(f'Google評價: {restaurant["rating"]}')
         return [loc_message, txt_message]
 
-    def list_restaurants(self, idx=-1):
+    def list_restaurants(self, place_type="foods", idx=-1):
+        if place_type == "foods":
+            restaurants = self.foods
+        elif place_type == "drinks":
+            restaurants = self.drinks
+
         text = ""
         if idx > 0:
-            total_page = math.ceil(len(self.restaurants) / 10)
+            total_page = math.ceil(len(restaurants) / 10)
             text += f"第{idx}頁/共{total_page}頁\n"
-            for restaurant in self.restaurants[(idx - 1) * 10 : idx * 10]:
+            for restaurant in restaurants[(idx - 1) * 10 : idx * 10]:
                 text += f"{restaurant['idx']}: {restaurant['name']}\n"
         else:
-            for restaurant in self.restaurants:
+            for restaurant in restaurants:
                 text += f"{restaurant['idx']}: {restaurant['name']}\n"
         txt_message = TextSendMessage(text=text[:-1])
         return txt_message
@@ -102,17 +113,22 @@ class Bot:
         elif in_msg[0] == "抽":
             out_msg = self.get_img()
         elif in_msg[0:2] == "餐廳":
-            if in_msg[2:3].isdigit():
-                out_msg = self.list_restaurants(eval(in_msg[2]))
+            if in_msg[2:].isdigit():
+                out_msg = self.list_restaurants("foods", eval(in_msg[2]))
             else:
-                out_msg = self.list_restaurants()
+                out_msg = self.list_restaurants("foods")
+        elif in_msg[0:3] == "飲料店":
+            if in_msg[2:].isdigit():
+                out_msg = self.list_restaurants("drinks", eval(in_msg[2]))
+            else:
+                out_msg = self.list_restaurants("drinks")
         return out_msg
 
 
 # %%
 if __name__ == "__main__":
     bot = Bot()
-    out = bot.handle_message("吃")
+    out = bot.handle_message("飲料店")
     print(out)
 
 # %%
