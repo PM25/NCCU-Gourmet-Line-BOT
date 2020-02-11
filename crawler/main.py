@@ -73,3 +73,14 @@ for place in all_places:
 with open("../id_index.pickle", "wb") as infile:
     pickle.dump(id_index_tab, infile)
 
+# %%
+with open("../all.pickle", "rb") as infile:
+    all_places = pickle.load(infile)
+
+ids = [place["place_id"] for place in all_places]
+places_detail = Places_Id(ids).get_details()
+
+with open("../all_details.pickle", "wb") as ofile:
+    pickle.dump(places_detail, ofile)
+
+# %%

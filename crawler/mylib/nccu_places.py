@@ -1,11 +1,10 @@
-import os
-import googlemaps
 from time import sleep
-from dotenv import load_dotenv, find_dotenv
+from mylib.google_maps_api import Google_Maps_API
 
 
-class NCCU_Places:
+class NCCU_Places(Google_Maps_API):
     def __init__(self, locations, language="zh-TW", rank_by="distance"):
+        super().__init__()
         self.locations = locations
         self.language = language
         self.rank_by = rank_by
@@ -13,7 +12,6 @@ class NCCU_Places:
             "lng": [121.572230, 121.579120],
             "lat": [24.986530, 24.989550],
         }
-        self.gmaps = self.get_google_maps_client()
 
     # Check if the given loaction is inside the restrict area
     def check_loc(self, lat, lng):
@@ -25,13 +23,6 @@ class NCCU_Places:
             return False
         else:
             return True
-
-    # Load API Key & Import Google Maps API Library
-    def get_google_maps_client(self):
-        load_dotenv(find_dotenv())
-        GOOGLE_PLACES_API_KEY = os.environ.get("GOOGLE_PLACES_API_KEY")
-        gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
-        return gmaps
 
     # Get all the places around locations with keywords and types
     def search_types_keywords(self, keywords, types):

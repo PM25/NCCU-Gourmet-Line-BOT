@@ -56,7 +56,7 @@ class Bot:
             "指令": lambda: self.help_menu("all"),
             "吃": lambda: self.get_restaurant("food"),
             "喝": lambda: self.get_restaurant("drink"),
-            "開": lambda: self.get_restaurant("open_now"),
+            "開": lambda: self.list_restaurants("open_now", num_part),
             "抽": lambda: self.get_img(),
             "餐廳": lambda: self.list_restaurants("food", num_part),
             "飲料店": lambda: self.list_restaurants("drink", num_part),
