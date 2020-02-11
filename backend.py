@@ -1,4 +1,5 @@
 #%%
+import re
 import math
 from pickle import load
 from pathlib import Path
@@ -41,17 +42,40 @@ class Bot:
         jpg_urls = [base_url + fname for fname in jpg_fnames]
         return jpg_urls
 
-    def get_img(self):
-        img_path = choice(self.jpg_urls)
-        img_message = ImageSendMessage(
-            original_content_url=img_path, preview_image_url=img_path
-        )
-        return img_message
+    # Handle Incoming Message from Line
+    def handle_message(self, msg):
+        str_part = re.match(r"[\u4e00-\u9fa5a-zA-Z]*", msg).group(0)
+        num_part = re.match(r"[0-9]*", msg).group(0)
+        if num_part == "":
+            num_part = -1
+        else:
+            num_part = eval(num_part)
 
-    def get_restaurant(self, place_type="foods"):
-        if place_type == "foods":
+        return {
+            "help": lambda: self.help_menu("simple"),
+            "指令": lambda: self.help_menu("all"),
+            "吃": lambda: self.get_restaurant("food"),
+            "喝": lambda: self.get_restaurant("drink"),
+            "開": lambda: self.get_restaurant("open_now"),
+            "抽": lambda: self.get_img(),
+            "餐廳": lambda: self.list_restaurants("food", num_part),
+            "飲料店": lambda: self.list_restaurants("drink", num_part),
+            "關於": lambda: self.about(),
+            "吃飯": lambda: self.get_restaurant("rice"),
+            "吃麵": lambda: self.get_restaurant("noodle"),
+            "吃素": lambda: self.get_restaurant("vegetarian"),
+            "吃點心": lambda: self.get_restaurant("vegetarian"),
+            "吃麵包": lambda: self.get_restaurant("dessert"),
+            "吃便當": lambda: self.get_restaurant("box"),
+            "吃貨": lambda: self.get_restaurant("eater"),
+            "喝茶": lambda: self.get_restaurant("tea"),
+            "喝咖啡": lambda: self.get_restaurant("coffee"),
+        }.get(str_part, lambda: None)()
+
+    def get_restaurant(self, place_type="food"):
+        if place_type == "food":
             restaurants = self.foods
-        elif place_type == "drinks":
+        elif place_type == "drink":
             restaurants = self.drinks
         elif place_type == "rice":
             restaurants = self.rice_restaurants
@@ -73,10 +97,10 @@ class Bot:
         txt_message = TextSendMessage(f'Google評價: {restaurant["rating"]}')
         return [loc_message, txt_message]
 
-    def list_restaurants(self, place_type="foods", idx=-1):
-        if place_type == "foods":
+    def list_restaurants(self, place_type="food", idx=-1):
+        if place_type == "food":
             restaurants = self.foods
-        elif place_type == "drinks":
+        elif place_type == "drink":
             restaurants = self.drinks
 
         text = ""
@@ -84,79 +108,52 @@ class Bot:
             total_page = math.ceil(len(restaurants) / 10)
             text += f"第{idx}頁/共{total_page}頁\n"
             for restaurant in restaurants[(idx - 1) * 10 : idx * 10]:
-                text += f"{restaurant['idx']}: {restaurant['name']}\n"
+                text += f"{restaurant['index']}: {restaurant['name']}\n"
         else:
             for restaurant in restaurants:
-                text += f"{restaurant['idx']}: {restaurant['name']}\n"
+                text += f"{restaurant['index']}: {restaurant['name']}\n"
         txt_message = TextSendMessage(text=text[:-1])
         return txt_message
 
-    def help_menu(self):
+    def get_img(self):
+        img_path = choice(self.jpg_urls)
+        img_message = ImageSendMessage(
+            original_content_url=img_path, preview_image_url=img_path
+        )
+        return img_message
+
+    def help_menu(self, display="simple"):
         text = [
-            "指令表:\n",
+            "簡易指令表:\n",
+            "指令 → 列出所有的指令\n",
             "吃 → 隨機選擇一間餐廳\n",
             "喝 → 隨機選擇一種飲料\n",
+            "開 → 列出正在營業餐廳\n",
             "抽 → 從吃貨政大IG隨機抽一張圖片\n",
-            "餐廳 → 列出所有餐廳\n",
             "關於 → 顯示小助手的相關資訊",
         ]
+        if display == "all":
+            text += [
+                "\n",
+                "吃(飯、麵、素、點心、麵包) → 隨機選擇一間餐廳(飯、麵、素、點心、麵包)\n",
+                "喝(茶、咖啡) → 隨機選擇一間飲料店(茶、咖啡)\n",
+                "餐廳 → 列出所有餐廳\n",
+                "餐廳(數字:n) → 顯示第n頁餐廳\n",
+                "飲料店 → 列出所有飲料店\n",
+                "飲料店(數字:n) → 顯示第n頁飲料店\n",
+                "吃貨 → 隨機選擇一間專業美食家推薦的餐廳",
+            ]
         txt_message = TextSendMessage(text="".join(text))
         return txt_message
 
-    def about_msg(self):
+    def about(self):
         text = ["開發者: PM\n", "版本: v1.0\n", "更新時間: 2019/2/9"]
         txt_message = TextSendMessage(text="".join(text))
         return txt_message
-
-    def handle_message(self, in_msg):
-        out_msg = TextSendMessage(text="")
-        if in_msg == "help":
-            out_msg = self.help_menu()
-        if in_msg[0] == "吃":
-            if len(in_msg) == 1:
-                out_msg = self.get_restaurant("foods")
-            else:
-                if in_msg[1] == "飯":
-                    out_msg = self.get_restaurant("rice")
-                elif in_msg[1] == "麵":
-                    out_msg = self.get_restaurant("noodle")
-                elif in_msg[1] == "素":
-                    pass
-                elif in_msg[1:3] == "點心":
-                    pass
-                elif in_msg[1] == "貨":
-                    pass
-        elif in_msg[0] == "喝":
-            if (len(in_msg)) == 1:
-                out_msg = self.get_restaurant("drinks")
-            else:
-                if in_msg[1] == "茶":
-                    pass
-                elif in_msg[1:3] == "咖啡":
-                    pass
-                else:
-                    pass
-        elif in_msg[0] == "抽":
-            out_msg = self.get_img()
-        elif in_msg[0:2] == "餐廳":
-            if in_msg[2:].isdigit():
-                out_msg = self.list_restaurants("foods", eval(in_msg[2]))
-            else:
-                out_msg = self.list_restaurants("foods")
-        elif in_msg[0:3] == "飲料店":
-            if in_msg[2:].isdigit():
-                out_msg = self.list_restaurants("drinks", eval(in_msg[2]))
-            else:
-                out_msg = self.list_restaurants("drinks")
-        elif in_msg == "關於":
-            out_msg = self.about_msg()
-        return out_msg
 
 
 # %%
 if __name__ == "__main__":
     bot = Bot()
-    out = bot.handle_message("吃飯")
+    out = bot.handle_message("餐廳")
     print(out)
-
-# %%
