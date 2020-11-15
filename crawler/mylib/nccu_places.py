@@ -2,12 +2,14 @@ from time import sleep
 from mylib.google_maps_api import Google_Maps_API
 
 
+# search by keywords or types near NCCU locations
 class NCCU_Places(Google_Maps_API):
-    def __init__(self, locations, language="zh-TW", rank_by="distance"):
+    def __init__(self, locations=[(24.9862, 121.5771)], language="zh-TW", rank_by="distance"):
         super().__init__()
         self.locations = locations
         self.language = language
         self.rank_by = rank_by
+        # only get places inside restrict area.
         self.restrict_area = {
             "lng": [121.572230, 121.579120],
             "lat": [24.986530, 24.989550],
@@ -25,7 +27,7 @@ class NCCU_Places(Google_Maps_API):
             return True
 
     # Get all the places around locations with keywords and types
-    def search_types_keywords(self, keywords, types):
+    def search_types_keywords(self, keywords=["restaurant", "餐廳"], types=["restaurant"]):
         results = []
         results += self.search_keywords(types, method="type")
         results += self.search_keywords(keywords, method="keyword")
@@ -34,7 +36,7 @@ class NCCU_Places(Google_Maps_API):
         return results
 
     # Get all the places around locations with keywords or types
-    def search_keywords(self, keywords, method="keyword"):
+    def search_keywords(self, keywords=["restaurant"], method="keyword"):
         results = []
         for keyword in keywords:
             results += self.search_keyword(keyword, method)
@@ -69,6 +71,8 @@ class NCCU_Places(Google_Maps_API):
                 type=keyword,
                 rank_by=self.rank_by,
             )
+        else:
+            raise ValueError("unsupported method value.")
 
         results = places_results["results"]
         # Get Second and Third page result
@@ -86,7 +90,7 @@ class NCCU_Places(Google_Maps_API):
     def remove_dup(self, places):
         results = {}
         for place in places:
-            place_id = place["id"]
+            place_id = place["place_id"]
             if place_id in results:
                 place["keywords"] += results[place_id]["keywords"]
             results[place_id] = place

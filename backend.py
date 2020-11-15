@@ -9,11 +9,12 @@ from linebot.models import *
 
 class Bot:
     def __init__(self):
-        self.foods = self.load_file("foods.pickle")
-        self.drinks = self.load_file("drinks.pickle")
-        self.keyword_id = self.load_file("keyword_id.pickle")
-        self.id_index = self.load_file("id_index.pickle")
-        self.all = self.load_file("all.pickle")
+        self.foods = self.load_file("data/foods.pickle")
+        self.drinks = self.load_file("data/drinks.pickle")
+        self.keyword_id = self.load_file("data/keyword_id.pickle")
+        self.id_index = self.load_file("data/id_index.pickle")
+        self.all = self.load_file("data/all.pickle")
+        self.all_details = self.load_file("data/all_details.pickle")
         self.jpg_urls = self.load_jpgs()
         self.rice_keywords = ["飯", "rice", "炒飯", "自助餐", "燉飯", "risotto", "飯館", "合菜"]
         self.noodle_keywords = ["麵", "noodle", "炒麵", "湯麵"]
@@ -102,13 +103,18 @@ class Bot:
             restaurants = self.foods
         elif place_type == "drink":
             restaurants = self.drinks
+        elif place_type == "open_now":
+            for place in self.all_details:
+                pass
 
         text = ""
+        # show specific page
         if idx > 0:
             total_page = math.ceil(len(restaurants) / 10)
             text += f"第{idx}頁/共{total_page}頁\n"
             for restaurant in restaurants[(idx - 1) * 10 : idx * 10]:
                 text += f"{restaurant['index']}: {restaurant['name']}\n"
+        # show all
         else:
             for restaurant in restaurants:
                 text += f"{restaurant['index']}: {restaurant['name']}\n"
@@ -129,7 +135,7 @@ class Bot:
             "吃 → 隨機選擇一間餐廳\n",
             "喝 → 隨機選擇一種飲料\n",
             "開 → 列出正在營業餐廳\n",
-            "抽 → 從吃貨政大IG隨機抽一張圖片\n",
+            "抽 → 隨機抽一張餐點圖片\n",
             "關於 → 顯示小助手的相關資訊",
         ]
         if display == "all":
@@ -147,7 +153,7 @@ class Bot:
         return txt_message
 
     def about(self):
-        text = ["開發者: PM\n", "版本: v1.0\n", "更新時間: 2019/2/9"]
+        text = ["開發者: PM\n", "版本: v1.0\n", "更新時間: 2020/11/15"]
         txt_message = TextSendMessage(text="".join(text))
         return txt_message
 
@@ -155,5 +161,27 @@ class Bot:
 # %%
 if __name__ == "__main__":
     bot = Bot()
-    out = bot.handle_message("餐廳")
+    out = bot.handle_message("吃")
     print(out)
+
+
+# %%
+# from datetime import datetime
+
+# bot = Bot()
+# all_details = bot.all_details
+
+# print(datetime.today())
+# weekday = datetime.today().weekday()
+# # %%
+# for place in all_details:
+#     if "opening_hours" in place:
+#         print(place["opening_hours"]["periods"]["close"])
+
+# %%
+import pickle
+
+with open("data/all.pickle", "rb") as infile:
+    places = pickle.load(infile)
+
+# %%

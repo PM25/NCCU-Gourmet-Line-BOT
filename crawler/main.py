@@ -3,7 +3,7 @@ from mylib import *
 
 import pickle
 
-
+# NCCU coordinate
 locations = [
     (24.987606, 121.576065),
     (24.987847, 121.574858),
@@ -42,11 +42,16 @@ coffee_keywords = ["咖啡店", "cafe"]
 # %%
 food_places = nccu.search_types_keywords(food_keywords, restaurant_types)
 drink_places = nccu.search_types_keywords(drink_keywords, drink_types)
+print(f"*Search foods & drinks completed.")
 
-with open("../foods.pickle", "wb") as infile:
+places_summary(food_places)
+places_summary(drink_places)
+
+#%%
+with open("../data/foods.pickle", "wb") as infile:
     pickle.dump(food_places, infile)
 
-with open("../drinks.pickle", "wb") as infile:
+with open("../data/drinks.pickle", "wb") as infile:
     pickle.dump(drink_places, infile)
 
 # %%
@@ -55,32 +60,30 @@ for place in food_places + drink_places:
     for keyword in place["keywords"]:
         keyword_id_tab[keyword] = keyword_id_tab.get(keyword, []) + [place["id"]]
 
-with open("../keyword_id.pickle", "wb") as infile:
+with open("../data/keyword_id.pickle", "wb") as infile:
     pickle.dump(keyword_id_tab, infile)
 
 # %%
 all_places = food_places + drink_places
 all_places = nccu.add_index(all_places)
 
-with open("../all.pickle", "wb") as infile:
+with open("../data/all.pickle", "wb") as infile:
     pickle.dump(all_places, infile)
 
 # %%
 id_index_tab = {}
 for place in all_places:
-    id_index_tab[place["id"]] = place["index"]
+    id_index_tab[place["place_id"]] = place["index"]
 
-with open("../id_index.pickle", "wb") as infile:
+with open("../data/id_index.pickle", "wb") as infile:
     pickle.dump(id_index_tab, infile)
 
 # %%
-with open("../all.pickle", "rb") as infile:
+with open("../data/all.pickle", "rb") as infile:
     all_places = pickle.load(infile)
 
 ids = [place["place_id"] for place in all_places]
 places_detail = Places_Id(ids).get_details()
 
-with open("../all_details.pickle", "wb") as ofile:
+with open("../data/all_details.pickle", "wb") as ofile:
     pickle.dump(places_detail, ofile)
-
-# %%
