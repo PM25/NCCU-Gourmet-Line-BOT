@@ -133,3 +133,4 @@ dmypy.json
 nccueater/
 test*
 googleapi.http
+*credential.json

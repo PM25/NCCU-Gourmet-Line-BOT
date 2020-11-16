@@ -1,18 +1,13 @@
 #%%
-from pymongo import MongoClient
+from google.cloud import firestore
 
 
 class Database:
     def __init__(self):
-        client = MongoClient("localhost", 27017)
-        self.db = client.database
-        self.db_places = self.db.places
+        self.db = firestore.Client()
+        self.db_places = self.db.collection("places2")
 
     def store(self, places):
         for place in places:
-            self.db_places.replace_one(
-                {"place_id": place["place_id"]}, place, upsert=True
-            )
-
-
-# %%
+            db_ref = self.db_places.document(place["place_id"])
+            db_ref.set(place, merge=True)
