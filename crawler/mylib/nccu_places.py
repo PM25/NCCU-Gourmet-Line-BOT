@@ -11,8 +11,8 @@ class NCCU_Places(Google_Maps_API):
         self.rank_by = rank_by
         # only get places inside restrict area.
         self.restrict_area = {
-            "lng": [121.572230, 121.579120],
-            "lat": [24.986530, 24.989550],
+            "lng": [121.572230, 121.579600],
+            "lat": [24.9861000, 24.989550],
         }
 
     # Check if the given loaction is inside the restrict area

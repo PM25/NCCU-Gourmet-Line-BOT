@@ -7,6 +7,6 @@ def places_summary(places):
     print("-" * 10)
     print(f"Total of {total_place} places.")
     print(f"Places: {places_name}")
-    print('-' * 10 + '\n')
+    print("-" * 10)
 
-# %%
+#%%
