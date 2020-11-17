@@ -134,3 +134,4 @@ nccueater/
 test*
 googleapi.http
 *credential.json
+*backup*

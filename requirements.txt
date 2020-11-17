@@ -3,3 +3,5 @@ gunicorn
 line-bot-sdk
 python-dotenv
 google-cloud-datastore
+firebase-admin
+googlemaps
